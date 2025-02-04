@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from "@/components/ui/button"
@@ -65,7 +65,9 @@ const powerTypes = [
     'aeg', 'gbbr', 'gbb_pistol', 'spring', 'hpa', 'co2', 'aep'
 ];
 
-export default function SearchPage() {
+
+
+function SearchContent() {
     const router = useRouter()
     const searchParams = useSearchParams()
     const query = searchParams.get('q') || ''
@@ -388,7 +390,9 @@ export default function SearchPage() {
                         <div className="hidden lg:block">
                             <Card className="bg-zinc-800/50 border-zinc-700 sticky top-24">
                                 <CardContent className="p-6">
-                                    <FilterContent />
+                                    <Suspense fallback={<div>Loading filters...</div>}>
+                                        <FilterContent />
+                                    </Suspense>
                                 </CardContent>
                             </Card>
                         </div>
@@ -523,5 +527,17 @@ export default function SearchPage() {
                 )}
             </div>
         </div>
+    )
+}
+
+export default function SearchPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen bg-zinc-900 md:pt-16 flex items-center justify-center">
+                <Loader2 className="w-8 h-8 animate-spin text-green-500" />
+            </div>
+        }>
+            <SearchContent />
+        </Suspense>
     )
 }

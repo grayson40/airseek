@@ -3,10 +3,10 @@ import { supabase } from '@/lib/supabase';
 
 export async function GET(
     request: Request,
-    { params }: { params: { productId: string } }
+    { params }: { params: Promise<{ productId: string }> }
 ) {
     try {
-        const productId = parseInt(await params.productId);
+        const productId = parseInt((await params).productId);
 
         if (isNaN(productId)) {
             return NextResponse.json(
