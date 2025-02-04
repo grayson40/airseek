@@ -1,0 +1,15 @@
+{
+    "version": 2,
+    "buildCommand": "npm run build",
+    "outputDirectory": "apps/web/.next",
+    "builds": [
+        {
+            "src": "apps/web/next.config.js",
+            "use": "@vercel/next"
+        },
+        {
+            "src": "apps/services/package.json",
+            "use": "@vercel/node"
+        }
+    ]
+}

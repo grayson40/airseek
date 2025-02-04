@@ -1,0 +1,31 @@
+{
+  "name": "airseek-services",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node-dev src/index.ts",
+    "scrape": "ts-node src/index.ts",
+    "cron": "tsc && node dist/cron.js",
+    "serve": "tsc && node dist/server.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.3",
+    "@types/cheerio": "^0.22.35",
+    "@types/express": "^5.0.0",
+    "cheerio": "^1.0.0-rc.12",
+    "dotenv": "^16.4.1",
+    "express": "^4.18.2",
+    "node-cron": "^3.0.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.16",
+    "@types/node-cron": "^3.0.11",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "eslint": "^8.56.0",
+    "ts-node-dev": "^2.0.0"
+  }
+}

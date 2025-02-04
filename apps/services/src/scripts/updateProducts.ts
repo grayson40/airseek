@@ -2,7 +2,7 @@ import type { ScrapedProduct } from '../types';
 import { ProductPlatforms } from '../types';
 import { createClient } from '@supabase/supabase-js';
 import * as cheerio from 'cheerio';
-import { BaseScraper } from '../services/scrapers/base';
+import { BaseScraper } from '../scrapers/base';
 import * as dotenv from 'dotenv';
 
 dotenv.config();

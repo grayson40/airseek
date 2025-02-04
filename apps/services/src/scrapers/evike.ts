@@ -1,6 +1,6 @@
 import * as cheerio from 'cheerio';
 import { BaseScraper } from './base';
-import type { ScrapedProduct } from '../../types';
+import type { ScrapedProduct } from '../types';
 
 export class EvikeScraper extends BaseScraper {
     storeName = 'Evike';

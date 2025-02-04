@@ -1,6 +1,6 @@
-import type { ScrapedProduct } from '@/types';
+import type { ScrapedProduct } from '../types';
 import { createClient } from '@supabase/supabase-js';
-import { EvikeScraper } from '../services/scrapers/evike';
+import { EvikeScraper } from '../scrapers/evike';
 import * as dotenv from 'dotenv';
 
 dotenv.config();

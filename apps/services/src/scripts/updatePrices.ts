@@ -1,8 +1,8 @@
-import { EvikeScraper } from '../services/scrapers/evike';
-// import { RedWolfScraper } from '../services/scrapers/redwolf';
-// import { AirsoftGIScraper } from '../services/scrapers/airsoftgi';
+import { EvikeScraper } from '../scrapers/evike';
+// import { RedWolfScraper } from '../scrapers/redwolf';
+// import { AirsoftGIScraper } from '../scrapers/airsoftgi';
 import { ProductMatcher } from '../services/matcher';
-import { PriceUpdater } from '../services/priceUpdater';
+import { PriceUpdater } from '../services/updater';
 import * as dotenv from 'dotenv';
 
 dotenv.config();

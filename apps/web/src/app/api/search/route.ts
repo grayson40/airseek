@@ -64,7 +64,7 @@ export async function GET(request: Request) {
                     min: product.fps_min,
                     max: product.fps_max
                 },
-                images: product.images,
+                images: product.images || [],
                 stores: formattedStorePrices,
                 lowestPrice: product.lowest_price,
                 highestPrice: product.highest_price,

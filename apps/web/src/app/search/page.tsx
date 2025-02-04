@@ -484,7 +484,7 @@ function SearchContent() {
                                             <Card className="bg-zinc-800/50 border-zinc-700 hover:border-green-500/50 transition-colors">
                                                 <CardContent className={view === 'grid' ? "p-4" : "p-4 flex gap-4"}>
                                                     <img
-                                                        src={product.images[0]}
+                                                        src={product.images?.[0] || '/mp5.jpg'}
                                                         alt={product.name}
                                                         className={view === 'grid' ?
                                                             "w-full h-48 object-cover rounded-lg mb-4" :

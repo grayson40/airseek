@@ -1,5 +1,5 @@
 import { ScrapedProduct } from '../types';
-import { supabase } from '../lib/supabase';
+import { supabase } from '../db/supabase';
 import { ProductMatcher } from './matcher';
 
 export class PriceUpdater {

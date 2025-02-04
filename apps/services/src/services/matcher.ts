@@ -1,5 +1,5 @@
 import { ScrapedProduct } from '../types';
-import { supabase } from '../lib/supabase';
+import { supabase } from '../db/supabase';
 import { ProductCategories, ProductTypes } from '../types';
 
 export class ProductMatcher {
@@ -7,7 +7,7 @@ export class ProductMatcher {
         // Use fuzzy matching on product names
         const normalizedName = this.normalizeName(scrapedProduct.name);
 
-        // Check if product already exists in our DB
+        // Check if product already exists in DB
         const { data: existingProduct } = await supabase
             .from('products')
             .select('*')

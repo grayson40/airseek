@@ -1,4 +1,4 @@
-import type { ScrapedProduct } from "../../types";
+import type { ScrapedProduct } from "../types";
 
 export abstract class BaseScraper {
     abstract storeName: string;
