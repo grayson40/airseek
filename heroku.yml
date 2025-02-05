@@ -1,8 +1,14 @@
 build:
   docker:
-    web: apps/web/Dockerfile
-    scraper: apps/services/Dockerfile
-    scheduler: apps/services/Dockerfile
+    web:
+      dockerfile: apps/web/Dockerfile
+      context: .
+    scraper:
+      dockerfile: apps/services/Dockerfile
+      context: .
+    scheduler:
+      dockerfile: apps/services/Dockerfile
+      context: .
 
 run:
   web: npm start
