@@ -3,7 +3,6 @@ WORKDIR /app
 
 # Setup workspace
 COPY package*.json ./
-COPY turbo.json ./
 RUN npm install
 
 # Copy service files and compile
