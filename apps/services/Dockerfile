@@ -1,20 +1,14 @@
 FROM node:18
 WORKDIR /app
 
-# Copy root package files for monorepo
+# Setup workspace
 COPY package*.json ./
-# COPY turbo.json ./
-
-# Copy the services package files
-COPY apps/services/package*.json ./apps/services/
-
-# Install dependencies
+COPY turbo.json ./
+COPY .env ./
 RUN npm install
 
-# Copy service files
+# Copy service files and compile
 COPY apps/services ./apps/services
-
-# Set working directory to services app
 WORKDIR /app/apps/services
 RUN npm run build
 

@@ -1,0 +1,11 @@
+[build]
+dockerfilePath = "docker-compose.yml"
+
+[deploy]
+startCommand = "docker-compose up"
+restartPolicyType = "ON_FAILURE"
+
+[[services]]
+name = "webapp"
+protocol = "tcp"
+port = "3000"

@@ -1,23 +1,14 @@
 FROM node:18-alpine
 WORKDIR /app
 
-# First copy root package files for monorepo
-COPY package*.json ./
-# COPY turbo.json ./
+# Copy root env
+COPY .env ./
 
-# Copy the web app package files
-COPY apps/web/package*.json ./apps/web/
-
-# Install dependencies
+# Copy app files
+COPY apps/web/package*.json ./
 RUN npm install
-
-# Copy the web app source
-COPY apps/web ./apps/web
-
-# Set working directory to web app
-WORKDIR /app/apps/web
+COPY apps/web .
 
 RUN npm run build
-ENV PORT=3000
-EXPOSE $PORT
+EXPOSE 3000
 CMD ["npm", "start"]
