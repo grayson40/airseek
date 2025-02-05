@@ -1,0 +1,10 @@
+build:
+  docker:
+    web: apps/web/Dockerfile
+    scraper: apps/services/Dockerfile
+    scheduler: apps/services/Dockerfile
+
+run:
+  web: npm start
+  scraper: npm run serve
+  scheduler: npm run cron
