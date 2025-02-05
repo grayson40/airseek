@@ -3,7 +3,7 @@ WORKDIR /app
 
 # First copy root package files for monorepo
 COPY package*.json ./
-COPY turbo.json ./
+# COPY turbo.json ./
 
 # Copy the web app package files
 COPY apps/web/package*.json ./apps/web/

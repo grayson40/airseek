@@ -2,13 +2,10 @@ build:
   docker:
     web:
       dockerfile: apps/web/Dockerfile
-      context: .
     scraper:
       dockerfile: apps/services/Dockerfile
-      context: .
     scheduler:
       dockerfile: apps/services/Dockerfile
-      context: .
 
 run:
   web: npm start
