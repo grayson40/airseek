@@ -2,15 +2,22 @@ FROM node:18
 WORKDIR /app
 
 # Setup workspace
-RUN npm install -g typescript
 COPY package*.json ./
 COPY turbo.json ./
 COPY .env ./
 RUN npm install
 
-# Copy service files and compile
+# Install TypeScript globally
+RUN npm install -g typescript
+
+# Copy service files
 COPY apps/services ./apps/services
 WORKDIR /app/apps/services
+
+# Install service dependencies before building
+RUN npm install
+
+# Now build
 RUN npm run build
 
 CMD ["npm", "run", "serve"]
