@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useEffect, Suspense } from 'react'
+import { useState, useEffect, Suspense, useCallback } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -40,8 +41,13 @@ import {
     BookmarkPlus,
     Loader2,
     History,
-    X
+    X,
+    BarChart2,
+    Bell,
+    ArrowRight
 } from 'lucide-react'
+import { ProductCard } from '@/components/ui/product-card'
+import type { Product } from '@/types'
 
 // Mock saved searches
 const savedSearches = [
@@ -74,14 +80,16 @@ function SearchContent() {
 
     // States
     const [searchInput, setSearchInput] = useState(query)
-    const [isLoading, setIsLoading] = useState(false)
-    const [results, setResults] = useState([])
+    const [isLoading, setIsLoading] = useState(true)
+    const [products, setProducts] = useState<Product[]>([])
     const [priceRange, setPriceRange] = useState([0, 1000])
     const [fpsRange, setFpsRange] = useState([200, 400])
     const [selectedBrands, setSelectedBrands] = useState<string[]>([])
     const [selectedTypes, setSelectedTypes] = useState<string[]>([])
     const [sortBy, setSortBy] = useState("relevance")
     const [view, setView] = useState("grid") // grid or list
+    const [currentPage, setCurrentPage] = useState(1)
+    const productsPerPage = 24
 
     // Save search functionality
     const saveSearch = () => {
@@ -89,7 +97,7 @@ function SearchContent() {
     }
 
     // Handle search
-    const handleSearch = async (e?: React.FormEvent) => {
+    const handleSearch = useCallback(async (e?: React.FormEvent) => {
         e?.preventDefault()
         if (!searchInput.trim()) return
 
@@ -105,19 +113,82 @@ function SearchContent() {
                 throw new Error('Failed to fetch search results')
             }
             const data = await response.json()
-            setResults(data)
+            setProducts(data)
         } catch (error) {
             console.error('Error fetching search results:', error)
+            setProducts([])
         } finally {
             setIsLoading(false)
         }
-    }
+    }, [searchInput, searchParams, router])
 
     useEffect(() => {
         if (query) {
             handleSearch()
         }
-    }, [query])
+    }, [query, handleSearch])
+
+    // Process products to include price range and stock status
+    const productsWithPriceRange = products.map(product => {
+        const prices = product.stores.map(store => store.price)
+        const lowestPrice = Math.min(...prices)
+        const highestPrice = Math.max(...prices)
+        const inStock = product.stores.some(store => store.inStock)
+        const rating = Math.max(...product.stores.map(store => store.rating)) || 0
+        const reviews = Math.max(...product.stores.map(store => store.reviews)) || 0
+
+        return {
+            ...product,
+            lowestPrice,
+            highestPrice,
+            inStock,
+            rating,
+            reviews
+        }
+    })
+
+    // Sort products
+    const sortedProducts = [...productsWithPriceRange].sort((a, b) => {
+        switch (sortBy) {
+            case "price_asc": return a.lowestPrice - b.lowestPrice
+            case "price_desc": return b.lowestPrice - a.lowestPrice
+            case "rating": return b.rating - a.rating
+            default: return 0 // relevance - as returned by the API
+        }
+    })
+
+    // Calculate pagination
+    const totalPages = Math.ceil(sortedProducts.length / productsPerPage)
+    const currentProducts = sortedProducts.slice(
+        (currentPage - 1) * productsPerPage, 
+        currentPage * productsPerPage
+    )
+
+    // Product action handlers
+    const handleCompare = (productId: string | number, e: React.MouseEvent) => {
+        e.preventDefault();
+        // Compare logic
+        console.log(`Compare product: ${productId}`);
+    };
+
+    const handleTrackPrice = (productId: string | number, e: React.MouseEvent) => {
+        e.preventDefault();
+        // Track price logic
+        console.log(`Track price for product: ${productId}`);
+    };
+
+    const handleSave = (productId: string | number, e: React.MouseEvent) => {
+        e.preventDefault();
+        // Save product logic
+        console.log(`Save product: ${productId}`);
+    };
+
+    const handleViewDetails = (productId: string | number, e: React.MouseEvent) => {
+        e.preventDefault();
+        // Instead of preventing navigation, we could add additional logic here
+        // before allowing the default navigation to occur
+        console.log(`View details for product: ${productId}`);
+    };
 
     // Filter panel component - shared between desktop and mobile
     const FilterContent = () => (
@@ -406,7 +477,7 @@ function SearchContent() {
                                         Results for &quot;{query}&quot;
                                     </h2>
                                     <p className="text-zinc-400">
-                                        {results.length} products found
+                                        {products.length} products found
                                     </p>
                                 </div>
 
@@ -436,8 +507,9 @@ function SearchContent() {
 
                             {/* Sort Controls */}
                             <div className="flex justify-between items-center mb-6">
+                                <div className="flex items-center gap-2 w-full sm:w-auto">
                                 <Select value={sortBy} onValueChange={setSortBy}>
-                                    <SelectTrigger className="w-[180px] bg-zinc-800/50 border-zinc-700">
+                                        <SelectTrigger className="w-full sm:w-[180px] bg-zinc-800/50 border-zinc-700">
                                         <SelectValue placeholder="Sort by" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -452,7 +524,7 @@ function SearchContent() {
                                     <Button
                                         variant="outline"
                                         size="sm"
-                                        className={`border-zinc-700 ${view === 'grid' ? 'bg-green-500' : ''}`}
+                                            className={`border-zinc-700 ${view === 'grid' ? 'bg-green-500/20 text-green-500' : ''}`}
                                         onClick={() => setView('grid')}
                                     >
                                         Grid
@@ -460,11 +532,12 @@ function SearchContent() {
                                     <Button
                                         variant="outline"
                                         size="sm"
-                                        className={`border-zinc-700 ${view === 'list' ? 'bg-green-500' : ''}`}
+                                            className={`border-zinc-700 ${view === 'list' ? 'bg-green-500/20 text-green-500' : ''}`}
                                         onClick={() => setView('list')}
                                     >
                                         List
                                     </Button>
+                                    </div>
                                 </div>
                             </div>
 
@@ -474,52 +547,149 @@ function SearchContent() {
                                     <Loader2 className="w-8 h-8 animate-spin text-green-500" />
                                 </div>
                             ) : (
-                                <div className={view === 'grid' ?
-                                    "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" :
-                                    "space-y-4"
-                                }>
-                                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                                    {results.map((product: any) => (
-                                        <Link href={`/product/${product.id}`} key={product.id}>
+                                <>
+                                    {view === 'grid' ? (
+                                        // Grid View
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                            {currentProducts.map((product) => (
+                                                <ProductCard 
+                                                    key={product.id}
+                                                    product={product}
+                                                    onCompare={handleCompare}
+                                                    onTrackPrice={handleTrackPrice}
+                                                    onSave={handleSave}
+                                                    onViewDetails={handleViewDetails}
+                                                />
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        // List View
+                                        <div className="space-y-3">
+                                            {currentProducts.map((product) => (
+                                                <Link key={product.id} href={`/product/${product.id}`}>
                                             <Card className="bg-zinc-800/50 border-zinc-700 hover:border-green-500/50 transition-colors">
-                                                <CardContent className={view === 'grid' ? "p-4" : "p-4 flex gap-4"}>
-                                                    <img
-                                                        src={product.images?.[0] || '/mp5.jpg'}
-                                                        alt={product.name}
-                                                        className={view === 'grid' ?
-                                                            "w-full h-48 object-cover rounded-lg mb-4" :
-                                                            "w-48 h-32 object-cover rounded-lg"
-                                                        }
-                                                    />
-                                                    <div className="flex-1">
-                                                        <h3 className="font-semibold mb-2">{product.name}</h3>
-                                                        {view === 'list' && (
-                                                            <p className="text-sm text-zinc-400 mb-2">{product.description}</p>
-                                                        )}
-                                                        <div className="flex justify-between items-center mb-2">
+                                                        <CardContent className="p-4">
+                                                            <div className="flex flex-col sm:flex-row gap-4">
+                                                                {/* Product Image */}
+                                                                <div className="w-full sm:w-40 lg:w-48 h-24 sm:h-32 flex-shrink-0">
+                                                                    <Image
+                                                                        src={product.images[0] || ''}
+                                                                        alt={product.name}
+                                                                        className="w-full h-full object-cover rounded-lg"
+                                                                        width={192}
+                                                                        height={128}
+                                                                    />
+                                                                </div>
+                                                                
+                                                                {/* Product Details */}
+                                                                <div className="flex-grow flex flex-col">
+                                                                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start">
+                                                                        <div>
+                                                                            <h3 className="font-semibold mb-1 text-sm sm:text-base line-clamp-1">{product.name}</h3>
+                                                                            <div className="flex items-center gap-2 mb-2">
                                                             <span className="text-xs text-zinc-400">{product.type.toUpperCase()}</span>
+                                                                                <span className="text-xs text-zinc-400">•</span>
+                                                                                <span className="text-xs text-zinc-400">{product.brand}</span>
+                                                                            </div>
                                                         </div>
-                                                        <div className="flex justify-between items-end">
-                                                            <div>
-                                                                <p className="text-lg font-bold">${product.lowestPrice}</p>
+                                                                        <div className="text-left sm:text-right">
+                                                                            <p className="text-base sm:text-lg font-bold">${product.lowestPrice}</p>
                                                                 {product.lowestPrice !== product.highestPrice && (
                                                                     <p className="text-xs text-zinc-400">
                                                                         to ${product.highestPrice}
                                                                     </p>
                                                                 )}
                                                             </div>
-                                                            <div className="text-right">
-                                                                <p className="text-sm text-zinc-400">{product.stores.length} stores</p>
-                                                                <p className={product.inStock ? "text-green-500 mb-2" : "text-red-500 mb-2"}>
-                                                                    {product.inStock ? "In Stock" : "Out of Stock"}
-                                                                </p>
-                                                            </div>
-                                                        </div>
+                                                                    </div>
+                                                                    
+                                                                    <div className="mt-auto flex justify-between">
+                                                                        <div className="flex items-center">
+                                                                            <p className="text-xs sm:text-sm text-zinc-400 mr-2">{product.stores.length} stores</p>
+                                                                            <p className={`text-xs sm:text-sm ${product.inStock ? 'text-green-500' : 'text-red-500'}`}>
+                                                                                {product.inStock ? 'In Stock' : 'Out of Stock'}
+                                                                            </p>
+                                                                        </div>
+                                                                        
+                                                                        {/* Quick Actions - Mobile Optimized */}
+                                                                        <div className="flex space-x-3">
+                                                                            <div 
+                                                                                className="flex flex-col items-center justify-center cursor-pointer group"
+                                                                                onClick={(e) => {
+                                                                                    e.preventDefault();
+                                                                                    handleCompare(product.id, e);
+                                                                                }}
+                                                                            >
+                                                                                <BarChart2 className="h-4 w-4 text-zinc-400 group-hover:text-green-500 transition-colors" />
+                                                                            </div>
+                                                                            <div 
+                                                                                className="flex flex-col items-center justify-center cursor-pointer group"
+                                                                                onClick={(e) => {
+                                                                                    e.preventDefault();
+                                                                                    handleTrackPrice(product.id, e);
+                                                                                }}
+                                                                            >
+                                                                                <Bell className="h-4 w-4 text-zinc-400 group-hover:text-green-500 transition-colors" />
+                                                                            </div>
+                                                                            <div 
+                                                                                className="flex flex-col items-center justify-center cursor-pointer group"
+                                                                                onClick={(e) => {
+                                                                                    e.preventDefault();
+                                                                                    handleSave(product.id, e);
+                                                                                }}
+                                                                            >
+                                                                                <Bookmark className="h-4 w-4 text-zinc-400 group-hover:text-green-500 transition-colors" />
+                                                                            </div>
+                                                                            <div 
+                                                                                className="flex flex-col items-center justify-center cursor-pointer group"
+                                                                                onClick={(e) => {
+                                                                                    e.preventDefault();
+                                                                                    handleViewDetails(product.id, e);
+                                                                                }}
+                                                                            >
+                                                                                <ArrowRight className="h-4 w-4 text-zinc-400 group-hover:text-green-500 transition-colors" />
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    
+                                                                    {/* Action Labels - Visible only on desktop */}
+                                                                    <div className="hidden sm:flex sm:justify-end sm:mt-2 sm:space-x-4 sm:text-xs sm:text-zinc-400">
+                                                                        <span>Compare</span>
+                                                                        <span>Track</span>
+                                                                        <span>Save</span>
+                                                                        <span>Details</span>
+                                                                    </div>
+                                                                </div>
                                                     </div>
                                                 </CardContent>
                                             </Card>
                                         </Link>
                                     ))}
+                                        </div>
+                                    )}
+                                </>
+                            )}
+
+                            {/* Pagination */}
+                            {totalPages > 1 && (
+                                <div className="flex justify-center mt-8">
+                                    <div className="flex gap-2">
+                                        <Button
+                                            variant="outline"
+                                            className="border-zinc-700"
+                                            disabled={currentPage === 1}
+                                            onClick={() => setCurrentPage(currentPage - 1)}
+                                        >
+                                            Previous
+                                        </Button>
+                                        <Button
+                                            variant="outline"
+                                            className="border-zinc-700"
+                                            disabled={currentPage === totalPages}
+                                            onClick={() => setCurrentPage(currentPage + 1)}
+                                        >
+                                            Next
+                                        </Button>
+                                    </div>
                                 </div>
                             )}
                         </div>

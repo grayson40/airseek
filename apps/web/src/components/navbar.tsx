@@ -16,7 +16,8 @@ const navItems = {
         'Rifles',
         'Pistols',
         'Gear',
-        'Parts'
+        'Parts',
+        'Accessories'
     ],
     'Deals': [
         'Weekly Deals',

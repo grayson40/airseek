@@ -5,12 +5,21 @@ export async function GET(
     request: Request,
 ) {
     try {
-        // Extract the category query parameter
+        // Extract the query parameters
         const url = new URL(request.url);
-        const category = url.searchParams.get('category');
+        let category = url.searchParams.get('category');
+        const idsParam = url.searchParams.get('ids');
+        
+        // Parse IDs if provided
+        const ids = idsParam ? idsParam.split(',').map(id => id.trim()) : null;
 
-        // Get all product details with store prices in a single query
-        const { data: products, error: productsError } = await supabase
+        // If category ends in 's', remove it
+        if (category && category.endsWith('s')) {
+            category = category.slice(0, -1);
+        }
+
+        // Base query
+        let query = supabase
             .from('products')
             .select(`
                 *,
@@ -24,8 +33,16 @@ export async function GET(
                     url,
                     last_updated
                 )
-            `)
-            .filter(category ? 'category' : 'id', category ? 'eq' : 'is', category || null); // Filter by category if provided
+            `);
+            
+        // Filter by IDs if provided, otherwise filter by category
+        if (ids && ids.length > 0) {
+            query = query.in('id', ids);
+        } else if (category) {
+            query = query.eq('category', category);
+        }
+        
+        const { data: products, error: productsError } = await query;
 
         if (productsError) {
             return NextResponse.json(
