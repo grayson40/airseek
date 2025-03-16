@@ -2,6 +2,7 @@ FROM node:18
 WORKDIR /app
 
 # Setup workspace
+RUN npm install -g typescript
 COPY package*.json ./
 COPY turbo.json ./
 COPY .env ./
