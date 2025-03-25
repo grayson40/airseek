@@ -69,6 +69,15 @@ function isPriceSummary(obj: any): obj is PriceSummary {
         ('thirtyDayLow' in obj || 'thirtyDayHigh' in obj || 'trend' in obj);
 }
 
+// Define a type for similar products
+type SimilarProduct = {
+    id: string;
+    name: string;
+    image: string;
+    price: number;
+    category: string;
+};
+
 export default function ProductPage() {
     const params = useParams()
     const router = useRouter()
@@ -82,6 +91,8 @@ export default function ProductPage() {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false)
     const [showAllRetailers, setShowAllRetailers] = useState(false)
     const [comparisonIds, setComparisonIds] = useState<string[]>([])
+    const [similarProducts, setSimilarProducts] = useState<SimilarProduct[]>([])
+    const [loadingSimilar, setLoadingSimilar] = useState(true)
 
     // Fetch product data from the API
     useEffect(() => {
@@ -97,6 +108,9 @@ export default function ProductPage() {
                     throw new Error('Product not found')
                 }
                 setProduct(data)
+                
+                // After getting product, fetch similar products
+                fetchSimilarProducts(data.category, data.brand, params.id as string);
             } catch (error) {
                 console.error('Error fetching product:', error)
                 toast.error('Product not found or an error occurred while fetching.')
@@ -115,6 +129,58 @@ export default function ProductPage() {
             fetchProduct()
         }
     }, [params.id])
+    
+    // Fetch similar products by category and brand
+    const fetchSimilarProducts = async (category: string, brand: string, currentId: string) => {
+        setLoadingSimilar(true)
+        try {
+            // Get products in the same category
+            const response = await fetch(`/api/products?category=${category}&limit=5`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch similar products');
+            }
+            
+            let similar = await response.json();
+            
+            // Filter out the current product
+            similar = similar.filter((p: any) => p.id !== currentId);
+            
+            // If we have less than 3 products, try to fetch more with the same brand
+            if (similar.length < 3) {
+                const brandResponse = await fetch(`/api/products?brand=${brand}&limit=3`);
+                if (brandResponse.ok) {
+                    const brandSimilar = await brandResponse.json();
+                    
+                    // Combine results, removing duplicates and current product
+                    const filtered = brandSimilar.filter((p: any) => 
+                        p.id !== currentId && !similar.some((s: any) => s.id === p.id)
+                    );
+                    
+                    similar = [...similar, ...filtered].slice(0, 4);
+                }
+            }
+            
+            // Map to our similar product type
+            const mappedSimilar = similar.map((p: any) => ({
+                id: p.id,
+                name: p.name,
+                image: p.images?.[0] || '',
+                price: p.lowestPrice || 0,
+                category: p.category
+            }));
+            
+            setSimilarProducts(mappedSimilar);
+        } catch (error) {
+            console.error('Error fetching similar products:', error);
+        } finally {
+            setLoadingSimilar(false);
+        }
+    };
+    
+    // Navigate to a similar product
+    const goToProduct = (id: string) => {
+        router.push(`/product/${id}`);
+    };
 
     if (isLoading) {
         return <ProductSkeleton />
@@ -683,19 +749,48 @@ export default function ProductPage() {
                         <div className="bg-zinc-800/50 rounded-lg p-6 mb-6">
                             <h3 className="text-xl font-medium mb-4">Similar Products</h3>
                             <div className="space-y-4">
-                                <p className="text-sm text-zinc-400">
-                                    Loading similar products...
-                                </p>
-                            </div>
-                        </div>
-
-                        {/* Recently Viewed */}
-                        <div className="bg-zinc-800/50 rounded-lg p-6">
-                            <h3 className="text-xl font-medium mb-4">Recently Viewed</h3>
-                            <div className="space-y-4">
-                                <p className="text-sm text-zinc-400">
-                                    Your recently viewed products will appear here.
-                                </p>
+                                {loadingSimilar ? (
+                                    <div className="space-y-4">
+                                        <Skeleton className="h-20 w-full" />
+                                        <Skeleton className="h-20 w-full" />
+                                        <Skeleton className="h-20 w-full" />
+                                    </div>
+                                ) : similarProducts.length > 0 ? (
+                                    similarProducts.map((prod) => (
+                                        <div 
+                                            key={prod.id} 
+                                            className="flex gap-3 items-center bg-zinc-800/30 p-3 rounded-lg cursor-pointer hover:bg-zinc-700/50 transition-colors"
+                                            onClick={() => goToProduct(prod.id)}
+                                        >
+                                            <div className="w-16 h-16 bg-zinc-900/50 rounded flex-shrink-0 overflow-hidden">
+                                                {prod.image ? (
+                                                    <Image 
+                                                        src={prod.image} 
+                                                        alt={prod.name}
+                                                        width={64}
+                                                        height={64}
+                                                        className="w-full h-full object-contain"
+                                                    />
+                                                ) : (
+                                                    <div className="w-full h-full flex items-center justify-center text-zinc-500">
+                                                        <ShoppingCart className="h-4 w-4" />
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-sm font-medium truncate">{prod.name}</p>
+                                                <p className="text-green-400 font-bold">${prod.price}</p>
+                                                <Badge variant="outline" className="mt-1 text-xs bg-zinc-800/70 border-zinc-700">
+                                                    {prod.category}
+                                                </Badge>
+                                            </div>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p className="text-sm text-zinc-400">
+                                        No similar products found.
+                                    </p>
+                                )}
                             </div>
                         </div>
                     </div>

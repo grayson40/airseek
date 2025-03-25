@@ -9,6 +9,7 @@ export async function GET(
         const url = new URL(request.url);
         let category = url.searchParams.get('category');
         const idsParam = url.searchParams.get('ids');
+        const limit = url.searchParams.get('limit');
         
         // Parse IDs if provided
         const ids = idsParam ? idsParam.split(',').map(id => id.trim()) : null;
@@ -40,6 +41,11 @@ export async function GET(
             query = query.in('id', ids);
         } else if (category) {
             query = query.eq('category', category);
+        }
+
+        // Limit the number of products if a limit is provided
+        if (limit) {
+            query = query.limit(parseInt(limit));
         }
         
         const { data: products, error: productsError } = await query;
