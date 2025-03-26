@@ -4,7 +4,7 @@ import { EvikeScraper } from '../scrapers/evike';
 import { ProductMatcher } from '../services/matcher';
 import { PriceUpdater } from '../services/updater';
 import * as dotenv from 'dotenv';
-
+import { MonitoringService } from '../services/monitoring';
 dotenv.config();
 
 async function updateAllPrices() {
@@ -13,9 +13,10 @@ async function updateAllPrices() {
         // new RedWolfScraper(),
         // new AirsoftGIScraper()
     ];
-    
+
     const matcher = new ProductMatcher();
-    const updater = new PriceUpdater(matcher);
+    const monitoring = new MonitoringService();
+    const updater = new PriceUpdater(matcher, monitoring);
     
     for (const scraper of scrapers) {
         try {
