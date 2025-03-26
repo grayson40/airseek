@@ -15,9 +15,9 @@ services:
       - "8000:8000"
     env_file: .env
 
-  scheduler:
-    build:
-      context: .
-      dockerfile: apps/services/Dockerfile
-    command: npm run cron
-    env_file: .env
+  # scheduler:
+  #   build:
+  #     context: .
+  #     dockerfile: apps/services/Dockerfile
+  #   command: npm run cron
+  #   env_file: .env
