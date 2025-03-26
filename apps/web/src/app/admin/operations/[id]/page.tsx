@@ -36,14 +36,10 @@ async function getOperationDetails(id: string): Promise<Operation | null> {
   return data.operation || null;
 }
 
-interface PageProps {
-  params: {
-    id: string;
-  };
-}
+type Props = Promise<{ id: string }>;
 
-export default async function OperationDetailPage({ params }: PageProps) {
-  const { id } = params;
+export default async function OperationDetailPage({ params }: { params: Props }) {
+  const { id } = await params;
   const operation = await getOperationDetails(id);
   
   if (!operation) {
