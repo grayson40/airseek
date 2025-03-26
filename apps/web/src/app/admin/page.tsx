@@ -1,5 +1,9 @@
 import React from 'react';
 import Link from 'next/link';
+import { unstable_noStore as noStore } from 'next/cache';
+
+// Mark page as dynamic
+export const dynamic = 'force-dynamic';
 
 interface DashboardStats {
   productCount: number;
@@ -14,28 +18,28 @@ interface Store {
 }
 
 interface Product {
-  stores?: Store[];
+  stores: Store[];
 }
 
 async function fetchDashboardStats(): Promise<DashboardStats> {
-  // Use absolute URLs for server component fetches
+  noStore(); // Opt out of static rendering
   const baseUrl = process.env.NEXT_PUBLIC_URL || 'http://localhost:3000';
   
   // Fetch product count
   const productsResponse = await fetch(`${baseUrl}/api/admin/products?limit=1`, { 
-    next: { revalidate: 300 } // Cache for 5 minutes
+    cache: 'no-store'
   });
   const productsData = await productsResponse.json();
   
   // Fetch operations with limit 1 to get the most recent
   const operationsResponse = await fetch(`${baseUrl}/api/admin/operations?limit=1`, {
-    next: { revalidate: 300 }
+    cache: 'no-store'
   });
   const operationsData = await operationsResponse.json();
   
   // Fetch metrics
   const metricsResponse = await fetch(`${baseUrl}/api/admin/metrics?limit=5`, {
-    next: { revalidate: 300 }
+    cache: 'no-store'
   });
   const metricsData = await metricsResponse.json();
   

@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import { unstable_noStore as noStore } from 'next/cache';
 import { RefreshButton } from '../../../components/admin/ClientButtons';
 
 interface Operation {
@@ -13,10 +14,14 @@ interface Operation {
   error_message: string | null;
 }
 
-async function getOperations(): Promise<Operation[]> {
+// Mark page as dynamic
+export const dynamic = 'force-dynamic';
+
+async function getOperations() {
+  noStore(); // Opt out of static rendering
   const baseUrl = process.env.NEXT_PUBLIC_URL || 'http://localhost:3000';
   const response = await fetch(`${baseUrl}/api/admin/operations?limit=50`, {
-    next: { revalidate: 60 } // Cache for 1 minute
+    cache: 'no-store'
   });
   
   if (!response.ok) {
@@ -24,8 +29,7 @@ async function getOperations(): Promise<Operation[]> {
     return [];
   }
   
-  const { data } = await response.json();
-  return data as Operation[] || [];
+  return response.json();
 }
 
 export default async function OperationsPage() {
@@ -76,7 +80,7 @@ export default async function OperationsPage() {
                   </td>
                 </tr>
               ) : (
-                operations.map((operation) => (
+                operations.map((operation: Operation) => (
                   <tr key={operation.id} className="hover:bg-slate-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900">
                       {operation.agent_name}

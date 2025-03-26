@@ -1,11 +1,13 @@
 import React from 'react';
 import ScraperControls from '../../../components/admin/ScraperControls';
+import { unstable_noStore as noStore } from 'next/cache';
 
 async function getScraperHealth() {
+  noStore(); // Opt out of static rendering
   const baseUrl = process.env.NEXT_PUBLIC_URL || 'http://localhost:3000';
   try {
     const response = await fetch(`${baseUrl}/api/admin/scrapers?endpoint=health`, {
-      cache: 'no-store' // Don't cache this data
+      cache: 'no-store'
     });
     
     if (!response.ok) {
@@ -21,10 +23,11 @@ async function getScraperHealth() {
 }
 
 async function getOperationStats() {
+  noStore(); // Opt out of static rendering
   const baseUrl = process.env.NEXT_PUBLIC_URL || 'http://localhost:3000';
   try {
     const response = await fetch(`${baseUrl}/api/admin/scrapers?endpoint=stats`, {
-      cache: 'no-store' // Don't cache this data
+      cache: 'no-store'
     });
     
     if (!response.ok) {
@@ -39,6 +42,9 @@ async function getOperationStats() {
     return [];
   }
 }
+
+// Mark page as dynamic
+export const dynamic = 'force-dynamic';
 
 export default async function ScrapersPage() {
   const health = await getScraperHealth();

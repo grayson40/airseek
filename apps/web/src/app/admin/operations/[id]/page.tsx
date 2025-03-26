@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import { unstable_noStore as noStore } from 'next/cache';
 
 interface Operation {
   id: string;
@@ -17,36 +18,45 @@ interface Operation {
   metadata: any;
 }
 
+// Mark page as dynamic
+export const dynamic = 'force-dynamic';
+
 async function getOperationDetails(id: string): Promise<Operation | null> {
+  noStore(); // Opt out of static rendering
   const baseUrl = process.env.NEXT_PUBLIC_URL || 'http://localhost:3000';
   const response = await fetch(`${baseUrl}/api/admin/operations/${id}`, {
-    next: { revalidate: 60 } // Cache for 1 minute
+    cache: 'no-store'
   });
   
   if (!response.ok) {
-    console.error(`Error fetching operation ${id}:`, response.statusText);
     return null;
   }
   
   const data = await response.json();
-  return data.operation;
+  return data.operation || null;
 }
 
-// Define the proper type for page params in Next.js App Router
-type Props = Promise<{ id: string }>;
+interface PageProps {
+  params: {
+    id: string;
+  };
+}
 
-export default async function OperationDetailPage(props: { params: Props }) {
-  const { id } = await props.params;
+export default async function OperationDetailPage({ params }: PageProps) {
+  const { id } = params;
   const operation = await getOperationDetails(id);
-
+  
   if (!operation) {
     return (
-      <div className="text-center py-12">
-        <h1 className="text-2xl font-semibold text-red-600">Operation Not Found</h1>
-        <p className="mt-4 text-slate-600">The operation you are looking for doesn&apos;t exist or was removed.</p>
-        <Link href="/admin/operations" className="mt-6 inline-block text-blue-600 hover:text-blue-800 font-medium">
-          Return to Operations List
-        </Link>
+      <div className="p-6">
+        <div className="mb-4">
+          <Link href="/admin/operations" className="text-blue-600 hover:text-blue-800">
+            ← Back to Operations
+          </Link>
+        </div>
+        <div className="bg-red-50 border border-red-200 rounded-md p-4">
+          <p className="text-red-800">Operation not found</p>
+        </div>
       </div>
     );
   }
