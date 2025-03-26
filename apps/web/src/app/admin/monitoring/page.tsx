@@ -1,4 +1,5 @@
 import React from 'react';
+import { unstable_noStore as noStore } from 'next/cache';
 
 interface MetricData {
   id: string;
@@ -15,19 +16,28 @@ interface GroupedMetrics {
   };
 }
 
+// Mark page as dynamic
+export const dynamic = 'force-dynamic';
+
 async function getMonitoringMetrics(): Promise<MetricData[]> {
+  noStore(); // Opt out of static rendering
   const baseUrl = process.env.NEXT_PUBLIC_URL || 'http://localhost:3000';
-  const response = await fetch(`${baseUrl}/api/admin/metrics?timeframe=7d&limit=500`, {
-    next: { revalidate: 300 } // Cache for 5 minutes
-  });
-  
-  if (!response.ok) {
-    console.error('Error fetching monitoring metrics:', response.statusText);
+  try {
+    const response = await fetch(`${baseUrl}/api/admin/metrics?timeframe=7d&limit=500`, {
+      cache: 'no-store'
+    });
+    
+    if (!response.ok) {
+      console.error('Error fetching monitoring metrics:', response.statusText);
+      return [];
+    }
+    
+    const data = await response.json();
+    return data.metrics || [];
+  } catch (error) {
+    console.error('Error fetching monitoring metrics:', error);
     return [];
   }
-  
-  const data = await response.json();
-  return data.metrics || [];
 }
 
 function groupMetricsByName(metrics: MetricData[]): GroupedMetrics {
