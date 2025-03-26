@@ -43,8 +43,7 @@ import {
     History,
     X,
     BarChart2,
-    Bell,
-    ArrowRight
+    Bell
 } from 'lucide-react'
 import { ProductCard } from '@/components/ui/product-card'
 import type { Product } from '@/types'
@@ -563,107 +562,73 @@ function SearchContent() {
                                             ))}
                                         </div>
                                     ) : (
-                                        // List View
-                                        <div className="space-y-3">
+                                        // List View - Compact version from categories page
+                                        <div className="space-y-2">
                                             {currentProducts.map((product) => (
                                                 <Link key={product.id} href={`/product/${product.id}`}>
-                                            <Card className="bg-zinc-800/50 border-zinc-700 hover:border-green-500/50 transition-colors">
-                                                        <CardContent className="p-4">
-                                                            <div className="flex flex-col sm:flex-row gap-4">
-                                                                {/* Product Image */}
-                                                                <div className="w-full sm:w-40 lg:w-48 h-24 sm:h-32 flex-shrink-0">
-                                                                    <Image
-                                                                        src={product.images[0] || ''}
-                                                                        alt={product.name}
-                                                                        className="w-full h-full object-cover rounded-lg"
-                                                                        width={192}
-                                                                        height={128}
-                                                                    />
-                                                                </div>
-                                                                
-                                                                {/* Product Details */}
-                                                                <div className="flex-grow flex flex-col">
-                                                                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start">
-                                                                        <div>
-                                                                            <h3 className="font-semibold mb-1 text-sm sm:text-base line-clamp-1">{product.name}</h3>
-                                                                            <div className="flex items-center gap-2 mb-2">
-                                                            <span className="text-xs text-zinc-400">{product.type.toUpperCase()}</span>
-                                                                                <span className="text-xs text-zinc-400">•</span>
-                                                                                <span className="text-xs text-zinc-400">{product.brand}</span>
-                                                                            </div>
+                                                    <div className="flex items-center bg-zinc-800/50 border border-zinc-700 rounded-md hover:border-green-500/50 transition-colors p-2 gap-3 mb-3">
+                                                        {/* Thumbnail Image */}
+                                                        <div className="w-12 h-12 flex-shrink-0 rounded overflow-hidden">
+                                                            <Image
+                                                                src={product.images[0] || ''}
+                                                                alt={product.name}
+                                                                className="w-full h-full object-cover"
+                                                                width={48}
+                                                                height={48}
+                                                            />
                                                         </div>
-                                                                        <div className="text-left sm:text-right">
-                                                                            <p className="text-base sm:text-lg font-bold">${product.lowestPrice}</p>
-                                                                {product.lowestPrice !== product.highestPrice && (
-                                                                    <p className="text-xs text-zinc-400">
-                                                                        to ${product.highestPrice}
-                                                                    </p>
-                                                                )}
+                                                        
+                                                        {/* Product Name & Brand */}
+                                                        <div className="flex-grow min-w-0">
+                                                            <h3 className="font-medium text-sm line-clamp-1">{product.name}</h3>
+                                                            <div className="flex items-center text-xs text-zinc-400">
+                                                                <span>{product.brand}</span>
+                                                                <span className="mx-1">•</span>
+                                                                <span>{product.type.toUpperCase()}</span>
                                                             </div>
-                                                                    </div>
-                                                                    
-                                                                    <div className="mt-auto flex justify-between">
-                                                                        <div className="flex items-center">
-                                                                            <p className="text-xs sm:text-sm text-zinc-400 mr-2">{product.stores.length} stores</p>
-                                                                            <p className={`text-xs sm:text-sm ${product.inStock ? 'text-green-500' : 'text-red-500'}`}>
-                                                                                {product.inStock ? 'In Stock' : 'Out of Stock'}
-                                                                            </p>
-                                                                        </div>
-                                                                        
-                                                                        {/* Quick Actions - Mobile Optimized */}
-                                                                        <div className="flex space-x-3">
-                                                                            <div 
-                                                                                className="flex flex-col items-center justify-center cursor-pointer group"
-                                                                                onClick={(e) => {
-                                                                                    e.preventDefault();
-                                                                                    handleCompare(product.id, e);
-                                                                                }}
-                                                                            >
-                                                                                <BarChart2 className="h-4 w-4 text-zinc-400 group-hover:text-green-500 transition-colors" />
-                                                                            </div>
-                                                                            <div 
-                                                                                className="flex flex-col items-center justify-center cursor-pointer group"
-                                                                                onClick={(e) => {
-                                                                                    e.preventDefault();
-                                                                                    handleTrackPrice(product.id, e);
-                                                                                }}
-                                                                            >
-                                                                                <Bell className="h-4 w-4 text-zinc-400 group-hover:text-green-500 transition-colors" />
-                                                                            </div>
-                                                                            <div 
-                                                                                className="flex flex-col items-center justify-center cursor-pointer group"
-                                                                                onClick={(e) => {
-                                                                                    e.preventDefault();
-                                                                                    handleSave(product.id, e);
-                                                                                }}
-                                                                            >
-                                                                                <Bookmark className="h-4 w-4 text-zinc-400 group-hover:text-green-500 transition-colors" />
-                                                                            </div>
-                                                                            <div 
-                                                                                className="flex flex-col items-center justify-center cursor-pointer group"
-                                                                                onClick={(e) => {
-                                                                                    e.preventDefault();
-                                                                                    handleViewDetails(product.id, e);
-                                                                                }}
-                                                                            >
-                                                                                <ArrowRight className="h-4 w-4 text-zinc-400 group-hover:text-green-500 transition-colors" />
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    
-                                                                    {/* Action Labels - Visible only on desktop */}
-                                                                    <div className="hidden sm:flex sm:justify-end sm:mt-2 sm:space-x-4 sm:text-xs sm:text-zinc-400">
-                                                                        <span>Compare</span>
-                                                                        <span>Track</span>
-                                                                        <span>Save</span>
-                                                                        <span>Details</span>
-                                                                    </div>
-                                                                </div>
+                                                        </div>
+                                                        
+                                                        {/* Price & Stock */}
+                                                        <div className="text-right flex-shrink-0 w-20">
+                                                            <p className="font-bold text-sm">${product.lowestPrice}</p>
+                                                            <p className={`text-xs ${product.inStock ? 'text-green-500' : 'text-red-500'}`}>
+                                                                {product.inStock ? 'In Stock' : 'Out of Stock'}
+                                                            </p>
+                                                        </div>
+                                                        
+                                                        {/* Quick Actions */}
+                                                        <div className="flex gap-2">
+                                                            <button 
+                                                                className="p-1 rounded-full hover:bg-zinc-700/50"
+                                                                onClick={(e) => {
+                                                                    e.preventDefault();
+                                                                    handleCompare(product.id, e);
+                                                                }}
+                                                            >
+                                                                <BarChart2 className="h-3.5 w-3.5 text-zinc-400" />
+                                                            </button>
+                                                            <button 
+                                                                className="p-1 rounded-full hover:bg-zinc-700/50"
+                                                                onClick={(e) => {
+                                                                    e.preventDefault();
+                                                                    handleTrackPrice(product.id, e);
+                                                                }}
+                                                            >
+                                                                <Bell className="h-3.5 w-3.5 text-zinc-400" />
+                                                            </button>
+                                                            <button 
+                                                                className="p-1 rounded-full hover:bg-zinc-700/50"
+                                                                onClick={(e) => {
+                                                                    e.preventDefault();
+                                                                    handleSave(product.id, e);
+                                                                }}
+                                                            >
+                                                                <Bookmark className="h-3.5 w-3.5 text-zinc-400" />
+                                                            </button>
+                                                        </div>
                                                     </div>
-                                                </CardContent>
-                                            </Card>
-                                        </Link>
-                                    ))}
+                                                </Link>
+                                            ))}
                                         </div>
                                     )}
                                 </>

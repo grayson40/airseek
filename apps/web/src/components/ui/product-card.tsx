@@ -17,6 +17,7 @@ interface ProductCardProps {
   onSave?: (productId: string | number, e: React.MouseEvent) => void;
   onViewDetails?: (productId: string | number, e: React.MouseEvent) => void;
   isComparing?: boolean;
+  compact?: boolean;
 }
 
 export function ProductCard({ 
@@ -25,8 +26,94 @@ export function ProductCard({
   onTrackPrice = () => {},
   onSave = () => {},
   onViewDetails = () => {},
-  isComparing = false
+  isComparing = false,
+  compact = false
 }: ProductCardProps) {
+  
+  if (compact) {
+    return (
+      <Link href={`/product/${product.id}`}>
+        <Card className="bg-zinc-800/50 border-zinc-700 hover:border-green-500/50 transition-colors h-full">
+          <CardContent className="p-3 flex flex-col h-full">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-16 h-16 flex-shrink-0 rounded overflow-hidden">
+                <Image
+                  src={product.images[0] || ''}
+                  alt={product.name}
+                  className="w-full h-full object-cover"
+                  width={64}
+                  height={64}
+                />
+              </div>
+              <div className="flex-grow min-w-0">
+                <h3 className="font-medium text-sm line-clamp-2">{product.name}</h3>
+                <div className="flex items-center gap-1 mt-1">
+                  <span className="text-xs text-zinc-400">{product.type.toUpperCase()}</span>
+                  <span className="text-xs text-zinc-400">•</span>
+                  <span className="text-xs text-zinc-400">{product.brand}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-between items-center mt-auto">
+              <div>
+                <p className="text-sm font-bold">${product.lowestPrice}</p>
+                {product.lowestPrice !== product.highestPrice && (
+                  <p className="text-xs text-zinc-400">
+                    to ${product.highestPrice}
+                  </p>
+                )}
+              </div>
+              <p className={`text-xs ${product.inStock ? 'text-green-500' : 'text-red-500'}`}>
+                {product.inStock ? 'In Stock' : 'Out of Stock'}
+              </p>
+            </div>
+            
+            {/* Quick Actions */}
+            <div className="mt-2 grid grid-cols-4 gap-1 border-t border-zinc-700 pt-2">
+              <div 
+                className={`flex items-center justify-center cursor-pointer group p-1 rounded-sm ${isComparing ? 'bg-green-500/20' : 'hover:bg-zinc-700/50'}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  onCompare(product.id, e);
+                }}
+              >
+                <BarChart2 className={`h-3.5 w-3.5 ${isComparing ? 'text-green-500' : 'text-zinc-400 group-hover:text-green-500'}`} />
+              </div>
+              <div 
+                className="flex items-center justify-center cursor-pointer group p-1 rounded-sm hover:bg-zinc-700/50"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onTrackPrice(product.id, e);
+                }}
+              >
+                <Bell className="h-3.5 w-3.5 text-zinc-400 group-hover:text-green-500" />
+              </div>
+              <div 
+                className="flex items-center justify-center cursor-pointer group p-1 rounded-sm hover:bg-zinc-700/50"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onSave(product.id, e);
+                }}
+              >
+                <Bookmark className="h-3.5 w-3.5 text-zinc-400 group-hover:text-green-500" />
+              </div>
+              <div 
+                className="flex items-center justify-center cursor-pointer group p-1 rounded-sm hover:bg-zinc-700/50"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onViewDetails(product.id, e);
+                }}
+              >
+                <ArrowRight className="h-3.5 w-3.5 text-zinc-400 group-hover:text-green-500" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </Link>
+    );
+  }
+  
   return (
     <Link href={`/product/${product.id}`}>
       <Card className="bg-zinc-800/50 border-zinc-700 hover:border-green-500/50 transition-colors h-full">

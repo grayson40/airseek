@@ -41,7 +41,9 @@ export function Navbar() {
                         {items.map((item) => (
                             <Link
                                 key={item}
-                                href={`/${category.toLowerCase()}/${item.toLowerCase().replace(/\s+/g, '-')}`}
+                                href={item === 'Weekly Deals' 
+                                    ? '/deals/weekly-deals' 
+                                    : `/${category.toLowerCase()}/${item.toLowerCase().replace(/\s+/g, '-')}`}
                                 className="text-sm text-zinc-400 hover:text-green-500 block py-1"
                                 onClick={onLinkClick} // Close sheet on link click
                             >
@@ -76,7 +78,9 @@ export function Navbar() {
                                                 {items.map((item) => (
                                                     <Link
                                                         key={item}
-                                                        href={`/${category.toLowerCase()}/${item.toLowerCase().replace(/\s+/g, '-')}`}
+                                                        href={item === 'Weekly Deals' 
+                                                            ? '/deals/weekly-deals' 
+                                                            : `/${category.toLowerCase()}/${item.toLowerCase().replace(/\s+/g, '-')}`}
                                                         className="block text-sm text-zinc-400 hover:text-green-500 py-2"
                                                     >
                                                         {item}

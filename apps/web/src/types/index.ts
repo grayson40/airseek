@@ -18,7 +18,6 @@ export interface Product {
     updatedAt: Date
     inStock: boolean
     popularity: number
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     priceHistory: any[]
 }
 

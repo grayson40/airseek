@@ -2,7 +2,6 @@
 
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function PriceChart({ data }: { data: any[] }) {
   return (
     <div className="h-[200px] bg-zinc-800/50 rounded-lg p-4">

@@ -57,9 +57,7 @@ export async function GET(
             );
         }
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const formattedProducts = products.map((product: any) => {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const formattedStorePrices = product.store_prices.map((store: any) => ({
                 id: store.id,
                 storeName: store.store_name,

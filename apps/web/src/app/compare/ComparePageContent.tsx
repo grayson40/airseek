@@ -74,7 +74,7 @@ export default function ComparePageContent() {
         } else {
             router.push('/')
         }
-    }, [])
+    })
 
     const removeProduct = (productId: string | number) => {
         const newProductIds = productIds.filter(id => id !== productId.toString())
