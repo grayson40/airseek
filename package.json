@@ -10,5 +10,8 @@
   },
   "devDependencies": {
     "turbo": "^1.12.4"
+  },
+  "dependencies": {
+    "string-similarity-js": "^2.1.4"
   }
 }
