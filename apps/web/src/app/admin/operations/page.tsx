@@ -1,7 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { unstable_noStore as noStore } from 'next/cache';
-import { RefreshButton } from '../../../components/admin/ClientButtons';
+import { RefreshButton } from '@/components/admin/ClientButtons';
 
 interface Operation {
   id: string;
@@ -17,23 +16,30 @@ interface Operation {
 // Mark page as dynamic
 export const dynamic = 'force-dynamic';
 
-async function getOperations() {
-  noStore(); // Opt out of static rendering
+async function getOperations(): Promise<Operation[]> {
   const baseUrl = process.env.NEXT_PUBLIC_URL || 'http://localhost:3000';
-  const response = await fetch(`${baseUrl}/api/admin/operations?limit=50`, {
-    cache: 'no-store'
-  });
-  
-  if (!response.ok) {
-    console.error('Error fetching operations:', response.statusText);
+  try {
+    const response = await fetch(`${baseUrl}/api/admin/operations?limit=50`, {
+      cache: 'no-store'
+    });
+    
+    if (!response.ok) {
+      console.error('Error fetching operations:', response.statusText);
+      return [];
+    }
+    
+    const { data } = await response.json();
+    // Ensure we always return an array
+    return Array.isArray(data) ? data : [];
+  } catch (error) {
+    console.error('Error fetching operations:', error);
     return [];
   }
-  
-  return response.json();
 }
 
 export default async function OperationsPage() {
   const operations = await getOperations();
+  console.log(operations);
   
   return (
     <div>

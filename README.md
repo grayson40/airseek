@@ -34,3 +34,70 @@ The project is organized into the following directories:
    ```bash
    docker-compose up --build
    ```
+
+## Development
+
+### Using Turbo (Recommended for Development)
+
+This is the easiest way to run the application locally:
+
+```bash
+# Install dependencies
+npm install
+
+# Run both services and web app in development mode
+npm run dev:local
+```
+
+This will start:
+- Web app on http://localhost:3001
+- API services on http://localhost:8001
+
+### Using Docker
+
+For production-like environment:
+
+```bash
+# Build containers
+docker-compose build
+
+# Run the application
+docker-compose up -d
+```
+
+This will start:
+- Web app on http://localhost:3001
+- API services on http://localhost:8001
+
+To view logs:
+```bash
+docker-compose logs -f
+```
+
+To stop:
+```bash
+docker-compose down
+```
+
+## Troubleshooting
+
+### Port Issues
+
+If you're experiencing port conflicts:
+1. Make sure no other applications are using ports 3001 and 8001
+2. Check the logs with `docker-compose logs -f` to see any errors
+3. For Docker, ensure environment variables are correctly set in .env file
+
+### API Connection Issues
+
+If the web app can't connect to the services:
+1. Ensure services are running (check the logs)
+2. Verify SERVICES_API_URL is set correctly
+3. For Docker, check that the services container is healthy
+
+### Deployment Notes
+
+For Linode or other cloud deployments:
+1. Update NEXT_PUBLIC_URL to match your domain
+2. Set up proper environment variables for production
+3. Consider using a reverse proxy (like Nginx) for production use

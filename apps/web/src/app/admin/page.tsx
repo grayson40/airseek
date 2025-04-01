@@ -23,7 +23,7 @@ interface Product {
 
 async function fetchDashboardStats(): Promise<DashboardStats> {
   noStore(); // Opt out of static rendering
-  const baseUrl = process.env.NEXT_PUBLIC_URL || 'http://localhost:3000';
+  const baseUrl = process.env.NEXT_PUBLIC_URL || 'http://localhost:3001';
   
   // Fetch product count
   const productsResponse = await fetch(`${baseUrl}/api/admin/products?limit=1`, { 
@@ -155,7 +155,7 @@ interface Operation {
 }
 
 async function RecentOperations() {
-  const baseUrl = process.env.NEXT_PUBLIC_URL || 'http://localhost:3000';
+  const baseUrl = process.env.NEXT_PUBLIC_URL || 'http://localhost:3001';
   const response = await fetch(`${baseUrl}/api/admin/operations?limit=5`, {
     next: { revalidate: 60 } // Cache for 1 minute
   });

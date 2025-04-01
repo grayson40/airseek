@@ -3,6 +3,8 @@ import Link from 'next/link';
 import { FilterButton } from '../../../components/admin/ClientButtons';
 import { SearchInput } from '../../../components/admin/ClientSearch';
 
+export const dynamic = 'force-dynamic';
+
 interface Product {
   id: string;
   name: string;

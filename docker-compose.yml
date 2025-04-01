@@ -8,9 +8,9 @@ services:
     environment:
       - NODE_ENV=production
     ports:
-      - "8000:8000"
+      - "8001:8001" 
     healthcheck:
-      test: ["CMD", "wget", "--spider", "http://localhost:8000/health"]
+      test: ["CMD", "wget", "--spider", "http://localhost:8001/health"]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -23,8 +23,9 @@ services:
     environment:
       - NODE_ENV=production
       - NEXT_TELEMETRY_DISABLED=1
-      - SERVICES_API_URL=http://services:8000
-      - NEXT_PUBLIC_URL=http://localhost:3000
+      - SERVICES_API_URL=http://services:8001
+      - NEXT_PUBLIC_URL=http://localhost:3001
+      - PORT=3001
     ports:
       - "3001:3001"
     depends_on:

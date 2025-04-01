@@ -46,6 +46,8 @@ async function getProductDetails(id: string) {
 // Define the proper type for page params in Next.js App Router
 type Props = Promise<{ id: string }>;
 
+export const dynamic = 'force-dynamic';
+
 export default async function ProductDetailPage(props: { params: Props }) {
   const { id } = await props.params;
   const productData = await getProductDetails(id);

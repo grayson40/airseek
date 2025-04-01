@@ -43,7 +43,7 @@ export async function initSystem() {
     
     // Start server for health checks and monitoring
     const server = await createServer(coordinator, monitoring);
-    console.log(`API server running on port ${process.env.PORT || 3000}`);
+    console.log(`API server running on port ${process.env.PORT || 8001}`);
     
     console.log('Airsoft price comparison system initialized');
     return { coordinator, monitoring, server };

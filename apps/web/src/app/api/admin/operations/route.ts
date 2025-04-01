@@ -1,8 +1,10 @@
 import { NextResponse } from 'next/server';
+import { unstable_noStore as noStore } from 'next/cache';
 import { supabase } from '../../../../lib/supabase';
 
 // GET handler for listing operations
 export async function GET(request: Request) {
+  noStore(); // Prevent caching
   try {
     const { searchParams } = new URL(request.url);
     const limit = parseInt(searchParams.get('limit') || '50');
