@@ -104,6 +104,7 @@ export default function CategoryPage() {
                     throw new Error('Failed to fetch products')
                 }
                 const data = await response.json()
+                console.log(data);
                 setProducts(data)
             } catch (error) {
                 console.error('Error fetching products:', error)
@@ -134,7 +135,7 @@ export default function CategoryPage() {
     // Filter logic
     const filteredProducts = products.filter(product => {
         const priceMatch = product.stores.some(store => store.price >= priceRange[0] && store.price <= priceRange[1]);
-        const fpsMatch = product.fps.max >= fpsRange[0] && product.fps.max <= fpsRange[1];
+        const fpsMatch = product.fps.max === 0 || (product.fps.max >= fpsRange[0] && product.fps.max <= fpsRange[1]);
         const brandMatch = selectedBrands.length === 0 || selectedBrands.includes(product.brand);
         const platformMatch = selectedPlatforms.length === 0 || selectedPlatforms.includes(product.platform);
         const powerTypeMatch = selectedPowerTypes.length === 0 || selectedPowerTypes.includes(product.type);
@@ -144,6 +145,21 @@ export default function CategoryPage() {
             product.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
             product.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
             product.type.toLowerCase().includes(searchQuery.toLowerCase());
+
+        // Debug which filters are failing
+        if (!priceMatch || !fpsMatch || !brandMatch || !platformMatch || !powerTypeMatch || !searchMatch) {
+            console.log(`Product ${product.id} filtered out:`, {
+                name: product.name,
+                priceMatch,
+                fpsMatch,
+                brandMatch,
+                platformMatch, 
+                powerTypeMatch,
+                searchMatch,
+                type: product.type,
+                platform: product.platform
+            });
+        }
 
         return priceMatch && fpsMatch && brandMatch && platformMatch && powerTypeMatch && searchMatch;
     }).sort((a, b) => {

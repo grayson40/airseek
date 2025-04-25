@@ -10,15 +10,9 @@ import {
 } from "@/components/ui/navigation-menu"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Menu } from 'lucide-react'
-
+import { ProductCategories } from '@/types'
 const navItems = {
-    'Categories': [
-        'Rifles',
-        'Pistols',
-        'Gear',
-        'Parts',
-        'Accessories'
-    ],
+    'Categories': Object.values(ProductCategories),
     'Deals': [
         'Weekly Deals',
         'Clearance',

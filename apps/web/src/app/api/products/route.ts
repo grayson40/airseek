@@ -14,11 +14,6 @@ export async function GET(
         // Parse IDs if provided
         const ids = idsParam ? idsParam.split(',').map(id => id.trim()) : null;
 
-        // If category ends in 's', remove it
-        if (category && category.endsWith('s')) {
-            category = category.slice(0, -1);
-        }
-
         // Base query
         let query = supabase
             .from('products')
@@ -35,18 +30,40 @@ export async function GET(
                     last_updated
                 )
             `);
+
+        // map category to the correct category
+        const categoryMap: { [key: string]: string } = {
+            'aeg': 'AEG',
+            'gbb_rifles': 'GBB_Rifles',
+            'sniper_rifles': 'Sniper_Rifles',
+            'shotguns': 'Shotguns',
+            'pistols': 'Pistols',
+            'gas_pistols': 'Gas_Pistols',
+            'spring_pistols': 'Spring_Pistols',
+            'electric_pistols': 'Electric_Pistols',
+        }
             
         // Filter by IDs if provided, otherwise filter by category
         if (ids && ids.length > 0) {
             query = query.in('id', ids);
         } else if (category) {
-            query = query.eq('category', category);
+            // Look up the proper category name in our map
+            const formattedCategory = categoryMap[category.toLowerCase()];
+            console.log(formattedCategory);
+            if (formattedCategory) {
+                query = query.eq('category', formattedCategory);
+            } else {
+                // Fallback to direct equality if no mapping exists
+                query = query.eq('category', category);
+            }
         }
 
         // Limit the number of products if a limit is provided
         if (limit) {
             query = query.limit(parseInt(limit));
         }
+
+        console.log(query);
         
         const { data: products, error: productsError } = await query;
 

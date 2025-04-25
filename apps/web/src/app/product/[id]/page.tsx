@@ -442,7 +442,7 @@ export default function ProductPage() {
                                     <h1 className="text-2xl font-bold mb-3 text-white leading-tight">{product.name || 'Product Name Not Available'}</h1>
                                     <div className="flex flex-wrap gap-4 text-sm text-zinc-400 mb-4">
                                         <span className="flex items-center"><Info className="h-3.5 w-3.5 mr-1.5 text-zinc-500" /> Brand: <span className="text-white ml-1 font-medium">{product.brand}</span></span>
-                                        <span className="flex items-center"><BarChart3 className="h-3.5 w-3.5 mr-1.5 text-zinc-500" /> FPS: <span className="text-white ml-1 font-medium">{product.fps.min}-{product.fps.max}</span></span>
+                                        {/* <span className="flex items-center"><BarChart3 className="h-3.5 w-3.5 mr-1.5 text-zinc-500" /> FPS: <span className="text-white ml-1 font-medium">{product.fps.min}-{product.fps.max}</span></span> */}
                                     </div>
                                 </div>
                                 <div className="flex gap-2">

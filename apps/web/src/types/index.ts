@@ -38,14 +38,14 @@ export interface StorePrice {
 
 // Main Categories
 export const ProductCategories = {
-    RIFLE: 'rifle',
-    PISTOL: 'pistol',
-    SMG: 'smg',
-    SHOTGUN: 'shotgun',
-    SNIPER: 'sniper',
-    LMG: 'lmg',
-    GEAR: 'gear',
-    PARTS: 'parts',
+    AEG: 'AEG',
+    GBB_RIFLES: 'GBB_Rifles',
+    SNIPER_RIFLES: 'Sniper_Rifles',
+    SHOTGUNS: 'Shotguns',
+    PISTOLS: 'Pistols',
+    GAS_PISTOLS: 'Gas_Pistols',
+    SPRING_PISTOLS: 'Spring_Pistols',
+    ELECTRIC_PISTOLS: 'Electric_Pistols',
 } as const
 
 // Power Types
