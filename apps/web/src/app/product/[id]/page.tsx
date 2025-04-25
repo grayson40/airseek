@@ -33,7 +33,7 @@ import {
     DollarSign,
     Star,
     History,
-    BarChart3,
+    // BarChart3,
     Plus,
     Minus,
     Check,

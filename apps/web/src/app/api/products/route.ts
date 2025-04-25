@@ -7,7 +7,7 @@ export async function GET(
     try {
         // Extract the query parameters
         const url = new URL(request.url);
-        let category = url.searchParams.get('category');
+        const category = url.searchParams.get('category');
         const idsParam = url.searchParams.get('ids');
         const limit = url.searchParams.get('limit');
         
